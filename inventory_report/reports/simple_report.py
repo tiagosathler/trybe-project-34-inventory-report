@@ -1,10 +1,14 @@
 from datetime import datetime
+import math
 
 
 def get_diff_date(product: dict) -> int:
     now = datetime.now()
-    date = datetime.fromisoformat(product["data_de_validade"])
-    return abs(date - now)
+    this_date = datetime.fromisoformat(product["data_de_validade"])
+    diff = this_date - now
+    if diff.days < 0:
+        return math.inf
+    return diff.days
 
 
 def get_most_counted_company(products: list[dict]) -> str:
