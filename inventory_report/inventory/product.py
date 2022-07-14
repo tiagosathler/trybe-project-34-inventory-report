@@ -18,7 +18,7 @@ class Product:
         self.instrucoes_de_armazenamento = instrucoes_de_armazenamento
 
     def __repr__(self):
-        return (
+        return str(
             f"O produto {self.nome_do_produto}"
             f" fabricado em {self.data_de_fabricacao}"
             f" por {self.nome_da_empresa} com validade"
