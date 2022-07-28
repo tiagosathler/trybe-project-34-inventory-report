@@ -1,30 +1,34 @@
 from datetime import datetime
+import math
 
 
 class SimpleReport:
     @classmethod
-    def _get_diff_date(cls, product: dict) -> int:
+    def _get_diff_date(cls, date_product: str) -> int:
         """
-        Método desta classe, privado, para ser usado no método 'sort'.
-        Calcula a diferença em segundos da data atual com a data de
-        fabricação de um produto.
+        Método privado da classe SimpleReport para ser usado no método 'sort'.
+        Calcula a diferença em dias de uma data de teste com a data atual.
+        Retorna infinito caso a diferença seja menor que zero.
 
         Entrada:
         --------
 
-        product: dict
-            dicionário produto com a chave 'data_de_validade'
+        date_product: str
+            data de teste no formato string 'YYYY-MM-DD'
 
         Saída:
         ------
 
-        seconds: int
-            a diferença em segundos da 'data_de_validade' com a data atual
+        days: int
+            a diferença em dias data de teste com a data atual
+            ou 'infinito' casa a diferença seja menor que zero
         """
         now = datetime.now()
-        this_date = datetime.fromisoformat(product["data_de_validade"])
-        diff = this_date - now
-        return diff.seconds
+        this_date = datetime.fromisoformat(date_product)
+        diff = (this_date - now).days
+        if diff < 0:
+            return math.inf
+        return diff
 
     @classmethod
     def _get_number_products_per_company(cls, products: list) -> list:
@@ -84,7 +88,11 @@ class SimpleReport:
 
         oldest_product = products_list[0].get("data_de_fabricacao")
 
-        products_list.sort(key=SimpleReport._get_diff_date)
+        products_list.sort(
+            key=lambda product: SimpleReport._get_diff_date(
+                product["data_de_validade"]
+            )
+        )
 
         closest_validity_product = products_list[0].get("data_de_validade")
 
