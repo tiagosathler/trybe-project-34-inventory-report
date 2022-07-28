@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import csv
+import json
 from inventory_report.reports.simple_report import SimpleReport
 from inventory_report.reports.complete_report import CompleteReport
 
@@ -18,11 +19,20 @@ class OpenWithCsv(OpenWithStrategy):
             return list(csv.DictReader(file, delimiter=',', quotechar='"'))
 
 
+class OpenWithJson(OpenWithStrategy):
+    @classmethod
+    def _open_file(cls, filename: str) -> list:
+        with open(filename, 'r', encoding='utf-8') as file:
+            return json.load(file)
+
+
 class Inventory:
     @classmethod
     def _open_file_with(cls, filename: str) -> list:
         if 'csv' in filename.lower():
             return OpenWithCsv._open_file(filename)
+        elif 'json' in filename.lower():
+            return OpenWithJson._open_file(filename)
 
     @classmethod
     def import_data(cls, filename: str, report: str) -> str:
