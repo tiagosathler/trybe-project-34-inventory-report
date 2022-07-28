@@ -27,12 +27,12 @@ class SimpleReport:
         return diff.seconds
 
     @classmethod
-    def _get_most_counted_company(cls, products: list) -> str:
+    def _get_number_products_per_company(cls, products: list) -> list:
         """
-        Método desta classe, privado, para ser usado pelo método 'generate'
-        da mesma classe.
-        Encontra o nome da empresa mais repetida na lista de dicionários de
-        produtos.
+        Método privado da classe SimpleReport para ser usado pelo método
+        'generate' da mesma classe.
+        Retorna uma lista não ordenada de dicionários contendo o nome da
+        empresa e sua respectiva quantidade de produtos
 
         Entrada:
         --------
@@ -43,8 +43,8 @@ class SimpleReport:
         Saída:
         ------
 
-        most_counted_company: str
-            o nome da empresa mais repetida na lista de dicionários de produtos
+        number_products_per_company: list[dict]
+            lista de dicionários {"name": NOME_DA_EMPRESA, "qtd": QTD_PRODUTOS}
         """
         companies = [product["nome_da_empresa"] for product in products]
         companies_list = dict.fromkeys(companies, 0)
@@ -53,15 +53,10 @@ class SimpleReport:
             companies_list[company_name] = companies.count(company_name)
 
         companies_list = [
-            {"name": k, "count": v} for (k, v) in companies_list.items()
+            {"name": k, "qtd": v} for (k, v) in companies_list.items()
         ]
 
-        companies_list.sort(
-            key=lambda company: company["count"],
-            reverse=True,
-        )
-
-        return companies_list[0]["name"]
+        return companies_list
 
     @classmethod
     def generate(cls, products: list) -> str:
@@ -83,15 +78,26 @@ class SimpleReport:
             Empresa com mais produtos: NOME_DA_EMPRESA
         """
 
-        products.sort(key=lambda product: product["data_de_fabricacao"])
+        products_list = products.copy()
 
-        oldest_product = products[0].get("data_de_fabricacao")
+        products_list.sort(key=lambda product: product["data_de_fabricacao"])
 
-        products.sort(key=SimpleReport._get_diff_date)
+        oldest_product = products_list[0].get("data_de_fabricacao")
 
-        closest_validity_product = products[0].get("data_de_validade")
+        products_list.sort(key=SimpleReport._get_diff_date)
 
-        most_counted_company = SimpleReport._get_most_counted_company(products)
+        closest_validity_product = products_list[0].get("data_de_validade")
+
+        number_products_per_company = (
+            SimpleReport._get_number_products_per_company(products)
+        )
+
+        number_products_per_company.sort(
+            key=lambda company: company["qtd"],
+            reverse=True,
+        )
+
+        most_counted_company = number_products_per_company[0]["name"]
 
         return str(
             f"Data de fabricação mais antiga: {oldest_product}\n"
