@@ -5,7 +5,7 @@ from inventory_report.importer.json_importer import JsonImporter
 from inventory_report.importer.xml_importer import XmlImporter
 
 
-def args_parser(args: list) -> None:
+def args_parser(args: list) -> tuple:
     filename = None
     report_method = None
     if len(args) == 3:
@@ -20,7 +20,7 @@ def args_parser(args: list) -> None:
     return (filename, report_method)
 
 
-def main():
+def main() -> None:
     args = sys.argv
     (filename, report_method) = args_parser(args)
 
